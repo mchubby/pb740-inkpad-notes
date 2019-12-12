@@ -1,0 +1,1 @@
+from .pocketbook_pb740_dd_dump import PocketbookPb740DdDump

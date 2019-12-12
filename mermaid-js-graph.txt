@@ -1,0 +1,56 @@
+graph LR
+
+%%define classes
+classDef classOk fill:green,color:#00FF00,stroke-width:2px,stroke:darkGreen;
+classDef classWarn fill:orange,color:#FFF,stroke-width:2px,stroke:darkOrange;
+classDef classDis fill:#eee,color:#000,stroke-width:0;
+%%classDef node stroke:#0000ff,stroke-width:4px;
+
+subgraph unmapped["fa:fa-microchip 36 MB unmapped data fa:fa-question-circle at SD card start"]
+egon0-1("BOOT0_EMMC3<br/>fa:fa-hdd upto 32 KB<br/>fa:fa-map-marker-alt @192 KB (384*512)<br/>eGON.BT0 (4.0 boot0)<br/>'the Embedded GO-ON Bootloader System'")
+---
+
+egon0-2("BOOT0_EMMC3 backup<br/>fa:fa-hdd upto 32 KB<br/>fa:fa-map-marker-alt @256 KB (512*512)<br/>eGON.BT0 (4.0 boot0)")
+---
+
+uboottoc-backup("UBOOT-backup pkg<br/>fa:fa-hdd upto 4? MB<br/>fa:fa-map-marker-alt @12MB (24576*512)<br/>boot1 sunxi-package")
+---
+
+uboottoc-main("UBOOT pkg<br/>fa:fa-hdd upto 4? MB<br/>fa:fa-map-marker-alt @~16MB (32800*512)<br/>boot1 sunxi-package")
+---
+
+parttable("partitions<br/>fa:fa-hdd 64 KB<br/>fa:fa-map-marker-alt @20MB<br/>4x 16KB sunxi PT")
+end
+parttable --- mmcblk0p2
+
+subgraph "mmcblk0p2: primary<br/>"
+mmcblk0p2(("mmcblk0p2 (/dev/boot)<br/>fa:fa-hdd 32 MB [df says 64MB?]<br/>fa:fa-map-marker-alt @36MB<br/>FAT16 /boot"))
+end
+mmcblk0p2 --- mmcblk0p5
+
+subgraph "mmcblk0p3: extended [protective?] fa:fa-hdd 754 MB (wrong fa:fa-map-marker-alt @.5MB in MBR)"
+mmcblk0p5("mmcblk0p5<br/>fa:fa-hdd 16 MB<br/>fa:fa-map-marker-alt @68MB<br/>env")
+---
+
+mmcblk0p6("mmcblk0p6<br/>fa:fa-hdd 34 MB<br/>pbenv")
+---
+
+mmcblk0p7("mmcblk0p7 (/dev/root)<br/>fa:fa-hdd 64 MB<br/>EXT2 /")
+---
+
+mmcblk0p8("mmcblk0p8 (/dev/ebrmain)<br/>fa:fa-hdd 512 MB<br/>EXT2 /ebrmain")
+---
+
+mmcblk0p9("mmcblk0p9 (/dev/secure)<br/>fa:fa-hdd 128 MB<br/> /mnt/secure")
+end
+mmcblk0p9 --- mmcblk0p1
+
+subgraph "mmcblk0p1: primary"
+mmcblk0p1("mmcblk0p1 (/dev/user_int)<br/>fa:fa-hdd 6.5 GB<br/>fa:fa-map-marker-alt @822MB<br/>FAT32 /mnt/ext1")
+end
+
+%%Style subgraph/nodes
+style unmapped fill:#eef,color:#33F,stroke-width:2px,stroke:darkBlue
+class egon0-1,egon0-2,uboottoc-backup,uboottoc-main,parttable classDis
+class mmcblk0p1 classOk
+class mmcblk0p2 classWarn
