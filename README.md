@@ -49,6 +49,7 @@ tmpfs                   /dev/shm          tmpfs   defaults  0 0
 ---------------------------------------------------
 
 **fstab from swupdate**  (Extracted from `SWUPDATE.BIN` with the "SynkActiv" script):
+```
 none			/proc		proc	  defaults  0 0
 none			/dev/pts	devpts  mode=0622 0 0
 tmpfs			/dev/shm	tmpfs	  defaults  0 0
@@ -56,6 +57,7 @@ tmpfs			/dev/shm	tmpfs	  defaults  0 0
 /dev/secure		/mnt/secure	auto    defaults  0 0
 /ebrmain/cramfs.img	/ebrmain/cramfs	auto	defaults,loop 0 0
 /dev/bootfs		/boot		auto	ro 	0 0
+```
 
 fdisk -l: blank response
 
@@ -106,6 +108,7 @@ Partition 3 does not end on cylinder boundary|
 |/dev/mmcblk0p8 | |0,0,0 |0,0,0 |372736 |1421311 |1048576 |512M |83 |Linux|
 |/dev/mmcblk0p9 | |0,0,0 |0,0,0 |1421312 |1683455 |262144 |128M |83 |Linux|
 
+```
 Partition table entries are not in disk order
 Disk /dev/mmcblk0boot1: 4 MB, 4194304 bytes, 8192 sectors
 128 cylinders, 4 heads, 16 sectors/track
@@ -117,16 +120,20 @@ Disk /dev/mmcblk0boot0: 4 MB, 4194304 bytes, 8192 sectors
 Units: cylinders of 64 * 512 = 32768 bytes
 
 Disk /dev/mmcblk0boot0 doesn't contain a valid partition table
+```
 
 ### Detecting supported file systems
-`# blkid /dev/mmcblk0p*`
+```bash
+# blkid /dev/mmcblk0p*
 /dev/mmcblk0p1: LABEL="Vivlio" UUID="4B3D-7544"
 /dev/mmcblk0p2: LABEL="Volumn"
 /dev/mmcblk0p7: UUID="da0bb0fb-8c84-477c-b781-1f8c7b6c5016"
 /dev/mmcblk0p8: UUID="04ce3511-5916-48d5-99be-c57f0bc955f1"
 /dev/mmcblk0p9: UUID="e3f04df8-c1d9-4de3-8640-b40d3a2ee37e"
+```
 
 `# df -h`
+
 | Filesystem | Size | Used | Available | Use% | Mounted | on |
 | - | - | - | - | - | - | - |
 | /dev/root | 63.6M | 19.8M | 40.6M | 33% | / |
@@ -146,7 +153,8 @@ Disk /dev/mmcblk0boot0 doesn't contain a valid partition table
 
 Note the dev/secure mounts are added by the jailbreak kit.
 
-`# find /var/dev -type l -exec ls -al {} ';'`
+```bash
+# find /var/dev -type l -exec ls -al {} ';'
 lrwxrwxrwx    1 root     root             6 Dec  1 23:19 /var/dev/input/keyboard0 -> event0
 lrwxrwxrwx    1 root     100              9 Dec  1 23:19 /var/dev/secure -> mmcblk0p9
 lrwxrwxrwx    1 root     100              3 Dec  1 23:19 /var/dev/fb -> fb0
@@ -163,6 +171,7 @@ lrwxrwxrwx    1 root     100              7 Dec  1 23:19 /var/dev/mxc_mem -> mxc
 lrwxrwxrwx    1 root     100              9 Dec  1 23:19 /var/dev/user_extp1 -> mmcblk1p1
 lrwxrwxrwx    1 root     100              9 Dec  1 23:19 /var/dev/root -> mmcblk0p7
 
+```
 
 See https://linux-sunxi.org/PocketBook_Touch_Lux_2_(626)#Device_specific_topic for a similar layout
 Here we have A20-style NAND layout at 0x01400000
@@ -171,6 +180,7 @@ See https://github.com/linux-sunxi/sunxi-tools/blob/master/nand-part-a20.h
 (all offsets below need to add 0x01400000 = 20 MB)
 
 ### Parsing the sunxi partition table at offset 20 MB
+```bash
 nandmbr-parse$ ./a.out SUNXIMBR.bin
 SUNXIMBR.bin
 check partition table
@@ -183,7 +193,9 @@ partition  4: class =         DISK, name =       rootfs, partition start =   200
 partition  5: class =         DISK, name =      ebrmain, partition start =   331776, partition size =  1048576 user_type=32768
 partition  6: class =         DISK, name =       secure, partition start =  1380352, partition size =   262144 user_type=32768
 partition  7: class =         DISK, name =        UDISK, partition start =  1642496, partition size =        0 user_type=33024
-alpha@DECADORE:/mnt/c/EXTRACT/inkpad3/nandmbr-parse$ ./a.out SUNXIMBR2.bin
+```
+```bash
+nandmbr-parse$ ./a.out SUNXIMBR2.bin
 SUNXIMBR2.bin
 check partition table
 mbr: version 0x00000200, magic softw411
@@ -195,7 +207,10 @@ partition  4: class =         DISK, name =       rootfs, partition start =   200
 partition  5: class =         DISK, name =      ebrmain, partition start =   331776, partition size =  1048576 user_type=32768
 partition  6: class =         DISK, name =       secure, partition start =  1380352, partition size =   262144 user_type=32768
 partition  7: class =         DISK, name =        UDISK, partition start =  1642496, partition size =        0 user_type=33024
-alpha@DECADORE:/mnt/c/EXTRACT/inkpad3/nandmbr-parse$ ./a.out SUNXIMBR3.bin
+```
+
+```bash
+nandmbr-parse$ ./a.out SUNXIMBR3.bin
 SUNXIMBR3.bin
 check partition table
 mbr: version 0x00000200, magic softw411
@@ -207,7 +222,10 @@ partition  4: class =         DISK, name =       rootfs, partition start =   200
 partition  5: class =         DISK, name =      ebrmain, partition start =   331776, partition size =  1048576 user_type=32768
 partition  6: class =         DISK, name =       secure, partition start =  1380352, partition size =   262144 user_type=32768
 partition  7: class =         DISK, name =        UDISK, partition start =  1642496, partition size =        0 user_type=33024
-alpha@DECADORE:/mnt/c/EXTRACT/inkpad3/nandmbr-parse$ ./a.out SUNXIMBR4.bin
+```
+
+```bash
+nandmbr-parse$ ./a.out SUNXIMBR4.bin
 SUNXIMBR4.bin
 check partition table
 mbr: version 0x00000200, magic softw411
@@ -219,6 +237,7 @@ partition  4: class =         DISK, name =       rootfs, partition start =   200
 partition  5: class =         DISK, name =      ebrmain, partition start =   331776, partition size =  1048576 user_type=32768
 partition  6: class =         DISK, name =       secure, partition start =  1380352, partition size =   262144 user_type=32768
 partition  7: class =         DISK, name =        UDISK, partition start =  1642496, partition size =        0 user_type=33024
+```
 
 # Mermaid graph
 ![partition-layout.png](partition-layout.png)
