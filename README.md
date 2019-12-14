@@ -28,23 +28,29 @@ Historically on devices booting on the hidden internal SD (PocketBook 626), they
 ### Mounts / partitioning
 
 `$ mount`
-rootfs on / (rootfs)
-dev/root on / (ext2)
-/dev/mmcblk0p2 on /boot (ext2)
-/dev/ebrmain on /ebrmain (ext2)
-/dev/secure on /secure (ext2)
-/dev/loop0 on /ebrmain/cramfs (cramfs)
-/dev/user_int on /mnt/ext1 (vfat)
-/dev/user_extp1 on /mnt/ext2 (vfat)
+
+|device |  mountpoint | type |
+|--|--|-- |
+|rootfs| on / |(rootfs)
+|dev/root| on / |(ext2)
+|/dev/mmcblk0p2| on /boot |(ext2)
+|/dev/ebrmain| on /ebrmain |(ext2)
+|/dev/secure| on /secure |(ext2)
+|/dev/loop0| on /ebrmain/cramfs |(cramfs)
+|/dev/user_int| on /mnt/ext1 |(vfat)
+|/dev/user_extp1| on /mnt/ext2 |(vfat)
 
 `$ cat /etc/fstab`
-none                    /proc             proc    defaults  0 0
-none                    /dev/pts          devpts  mode=0622 0 0
-tmpfs                   /dev/shm          tmpfs   defaults  0 0
-/dev/ebrmain          /ebrmain          auto    ro        0 0
-/dev/secure          /mnt/secure       auto    defaults  0 0
-/ebrmain/cramfs.img     /ebrmain/cramfs   auto    defaults,loop 0 0
-/dev/mmcblk0p2          /boot           auto    ro 0 0
+
+|device |  mountpoint | type | opts etc.|
+|--|--|--|-- |
+|none                    |/proc             |proc|    defaults  0 0
+|none                    |/dev/pts          |devpts|  mode=0622 0 0
+|tmpfs                   |/dev/shm          |tmpfs|   defaults  0 0
+|/dev/ebrmain          |/ebrmain          |auto|    ro        0 0
+|/dev/secure          |/mnt/secure       |auto|    defaults  0 0
+|/ebrmain/cramfs.img     |/ebrmain/cramfs   |auto|    defaults,loop 0 0
+|/dev/mmcblk0p2          |/boot           |auto|    ro 0 0
 
 ---------------------------------------------------
 
@@ -63,8 +69,8 @@ fdisk -l: blank response
 
 ### Filled with 00-bytes: mmcblk0boot0 and mmcblk0boot1
 ```
-# dd if=/dev/mmcblk0boot0 of=/mnt/ext2/backup/mmcblk0boot0.dd
-# dd if=/dev/mmcblk0boot1 of=/mnt/ext2/backup/mmcblk0boot1.dd
+# dd if=/dev/mmcblk0boot0 of=/mnt/ext2/mmcblk0boot0.dd
+# dd if=/dev/mmcblk0boot1 of=/mnt/ext2/mmcblk0boot1.dd
 ```
 
 ### Exploring the partitioning with root
@@ -317,15 +323,19 @@ class mmcblk0p2 classWarn
 
 # splitter script
 
-(Optional) Regenerate the python handler code from the ksy descriptive file.
+#### (Optional) Regenerate the python handler code from the ksy descriptive file.
 ```batch
 C:\EXTRACT\kaitai-struct-compiler-0.8\bin\kaitai-struct-compiler.bat -t all pocketbook-pb740-dd-dump.ksy
 ```
 
+#### Install pip dependencies
  ```bash
 $ sudo pip install kaitaistruct
 (--user if you want, or create a venv)
+```
 
+#### Run the splitter script on dd image
+ ```bash
 $ python pocketbook-pb740-dd-dump-to-files.py mmcblk0--dd
 ```
 
